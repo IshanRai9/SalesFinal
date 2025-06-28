@@ -11,11 +11,18 @@ from pdf2image import convert_from_bytes
 from gmail_utils import gmail_authenticate, get_recent_emails, get_attachment
 from dotenv import load_dotenv
 import os
+import json
 
-load_dotenv()
-api_key = os.getenv("COHERE_API_KEY")  # Ensure your API key is set in the environment
-# Initialize Cohere client
-co = cohere.ClientV2(api_key)  # Replace with your key
+# Write credentials.json to a temp file
+with open("credentials.json", "w") as f:
+    f.write(st.secrets["credentials"])
+
+# Write token.json to a temp file
+with open("token.json", "w") as f:
+    f.write(st.secrets["token"])
+
+cohere_api_key = st.secrets["cohere_api_key"]
+co = cohere.Client(cohere_api_key)
 
 data = None
 
@@ -348,8 +355,8 @@ def stream_summary_from_cohere(text):
         f"{text}"
     )
     response = co.chat_stream(
-        model="command-a-03-2025", 
-        messages=[{"role": "user", "content": prompt}],
+        model="command-a-03-2025",
+        messages=[{"role": "user", "content": prompt}]
     )
     for chunk in response:
         if chunk and chunk.type == "content-delta":
