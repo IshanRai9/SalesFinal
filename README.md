@@ -62,30 +62,66 @@ Sales2/
 1. Run **python gmail_utils.py** 
 * A browser or link will open asking you to log in (**USING THE MAIL TO ADDED IN TEST USERS ABOVE**) and authorize the Gmail read access.
 * After successful login u might see a **✅ Gmail authentication successful.** in your terminal and a `token.json` file will be generated — this securely stores your access and refresh tokens.
- 2. Run **streamlit run Salesapp.py**
- * A list of **Sent and Received Emails** will be visible with a **Generate button** next to it
+2. Run **streamlit run Salesapp.py**
+* A list of **Sent and Received Emails** will be visible with a **Generate button** next to it
 
 ---
 
-# Using OpenAI API Instead of Cohere
+### ✅ Step 5: Streamlit Secrets
+1. After deploying the app to Streamlit go to **My apps** -> Your app **Settings** -> **Secrets**
+2. Put put your apikey, credentials.json and tokenjson details in the following format:
+```toml
+cohere_api_key=""
 
-This guide shows how to modify `Salesapp.py` to use the **OpenAI API** instead of Cohere.
+credentials = """
+{
+  "installed": {
+    "client_id": "",
+    "project_id": "",
+    "auth_uri": "",
+    "token_uri": "",
+    "auth_provider_x509_cert_url": "",
+    "client_secret": "",
+    "redirect_uris": ["http://localhost"]
+  }
+}
+"""
+
+token = """
+{
+  "token": "",
+  "refresh_token": "",
+  "token_uri": "",
+  "client_id": "",
+  "client_secret": "",
+  "scopes": ["https://www.googleapis.com/auth/gmail.readonly"],
+  "universe_domain": "googleapis.com",
+  "account": "",
+  "expiry": ""
+}
+"""
+```
+
+---
+# 🔄 Migrating from Cohere to OpenAI in `Salesapp.py`
+
+This guide explains how to replace **Cohere API** with **OpenAI API** in your `Salesapp.py` for summarizing tenders and emails.
 
 ---
 
-## 🔁 Step-by-Step: Replace Cohere with OpenAI
+## ✅ Step 1: Install OpenAI Library
 
-### 1. Install Required Library
+Install the required OpenAI Python package:
 
 ```bash
 pip install openai
-````
+```
 
 ---
 
-### 2. Update Imports
+## ✅ Step 2: Update Imports
 
-Replace:
+Replace the existing import of Cohere:
 
 ```python
 import cohere
@@ -99,12 +135,12 @@ import openai
 
 ---
 
-### 3. Set OpenAI API Key
+## ✅ Step 3: Set OpenAI API Key
 
-Replace:
+Replace the Cohere client initialization:
 
 ```python
-co = cohere.ClientV2(api_key="your-cohere-key")
+co = cohere.Client("your-cohere-key")
 ```
 
 With:
@@ -113,20 +149,29 @@ With:
 openai.api_key = "your-openai-api-key"
 ```
 
----
-
-### 4. Update `stream_summary_from_cohere` Function
-
-Replace:
+Or load it from `st.secrets` if using Streamlit:
 
 ```python
-response = co.chat_stream(model="command-a-03-2025", messages=[{"role": "user", "content": prompt}])
-for chunk in response:
-    if chunk and chunk.type == "content-delta":
-        yield chunk.delta.message.content.text
+openai.api_key = st.secrets["openai_api_key"]
 ```
 
-With:
+---
+
+## ✅ Step 4: Update `stream_summary_from_cohere` Function
+
+Replace the Cohere streaming logic:
+
+```python
+response = co.chat_stream(
+    model="command-a-03-2025",
+    message=prompt
+)
+for chunk in response:
+    if hasattr(chunk, "text") and chunk.text:
+        yield chunk.text
+```
+
+With OpenAI's streaming format:
 
 ```python
 response = openai.ChatCompletion.create(
@@ -141,9 +186,20 @@ for chunk in response:
 
 ---
 
-### 5. Update `stream_email_summary_from_cohere` Function Similarly
+## ✅ Step 5: Update `stream_email_summary_from_cohere` Similarly
 
-Apply the same replacement logic using `openai.ChatCompletion.create(...)` as in step 4.
+Also replace the cohere streaming call in `stream_email_summary_from_cohere` with:
+
+```python
+response = openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": prompt}],
+    stream=True
+)
+for chunk in response:
+    if "choices" in chunk and chunk["choices"][0].get("delta", {}).get("content"):
+        yield chunk["choices"][0]["delta"]["content"]
+```
 
 ---
 
