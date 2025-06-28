@@ -11,6 +11,15 @@ from pdf2image import convert_from_bytes
 from gmail_utils import gmail_authenticate, get_recent_emails, get_attachment
 from dotenv import load_dotenv
 import os
+import json
+
+# Write credentials.json to a temp file
+with open("credentials.json", "w") as f:
+    f.write(st.secrets["credentials"])
+
+# Write token.json to a temp file
+with open("token.json", "w") as f:
+    f.write(st.secrets["token"])
 
 cohere_api_key = st.secrets["cohere_api_key"]
 co = cohere.Client(cohere_api_key)
