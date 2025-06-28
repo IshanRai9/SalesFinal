@@ -12,10 +12,8 @@ from gmail_utils import gmail_authenticate, get_recent_emails, get_attachment
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-api_key = os.getenv("COHERE_API_KEY")  # Ensure your API key is set in the environment
-# Initialize Cohere client
-co = cohere.ClientV2(api_key)  # Replace with your key
+cohere_api_key = st.secrets["cohere_api_key"]
+co = cohere.Client(cohere_api_key)
 
 data = None
 
