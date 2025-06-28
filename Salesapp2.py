@@ -356,7 +356,7 @@ def stream_summary_from_cohere(text):
     )
     response = co.chat_stream(
         model="command-a-03-2025",
-        messages=[{"role": "user", "content": prompt}]
+        message=prompt
     )
     for chunk in response:
         if chunk and chunk.type == "content-delta":
@@ -446,7 +446,7 @@ def stream_email_summary_from_cohere(email_text, has_attachment):
 
     response = co.chat_stream(
         model="command-a-03-2025",
-        messages=[{"role": "user", "content": prompt}]
+        message=prompt
     )
 
     x = ""
