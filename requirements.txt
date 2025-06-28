@@ -1,0 +1,11 @@
+cohere
+streamlit
+pytesseract
+PyPDF2
+Pillow
+pdf2image
+dotenv
+google-auth
+google-auth-oauthlib
+google-api-python-client
+docx
