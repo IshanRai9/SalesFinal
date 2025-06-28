@@ -354,7 +354,10 @@ def stream_summary_from_cohere(text):
             Tender Document:\n\n"""
         f"{text}"
     )
-    response = co.chat_stream(model="command-a-03-2025", messages=[{"role": "user", "content": prompt}])
+    response = co.chat_stream(
+        model="command-a-03-2025",
+        messages=[{"role": "user", "content": prompt}]
+    )
     for chunk in response:
         if chunk and chunk.type == "content-delta":
             yield chunk.delta.message.content.text
@@ -471,7 +474,7 @@ if emails:
                 email_text = email.get('snippet') or "No snippet available."
                 email_summary_placeholder = st.empty()
                 email_summary_output = ""
-                for chunk in stream_email_summary_from_cohere(email_text, has_attachment=email['has_attachment']):
+                for chunk in stream_email_summary_from_cohere(email_text, has_attachment=bool(email.get('has_attachment', False))):
                     email_summary_output += chunk
                     email_summary_placeholder.markdown("### 📖 Email Summary\n" + email_summary_output + "\n\n---\n")
 
