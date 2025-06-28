@@ -9,9 +9,13 @@ import pytesseract
 from PIL import Image
 from pdf2image import convert_from_bytes
 from gmail_utils import gmail_authenticate, get_recent_emails, get_attachment
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+api_key = os.getenv("COHERE_API_KEY")  # Ensure your API key is set in the environment
 # Initialize Cohere client
-co = cohere.ClientV2(api_key="ZhhgbQv50dDP0TuIgbYgZ32g8rwPhaqvsHco45Mh")  # Replace with your key
+co = cohere.ClientV2(api_key)  # Replace with your key
 
 data = None
 
