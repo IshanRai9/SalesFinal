@@ -25,8 +25,8 @@ def gmail_authenticate():
     return build('gmail', 'v1', credentials=creds)
 
 
-def get_recent_emails(service, max_results=10):
-    results = service.users().messages().list(userId='me', maxResults=max_results).execute()
+def get_recent_emails(service, max_results=50):
+    results = service.users().messages().list(userId='me', q='in:inbox -in:sent', maxResults=max_results).execute()
     messages = results.get('messages', [])
 
     email_data = []
