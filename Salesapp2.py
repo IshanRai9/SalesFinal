@@ -359,9 +359,8 @@ def stream_summary_from_cohere(text):
         messages=[{"role": "user", "content": prompt}]
     )
     for chunk in response:
-        if chunk and chunk.type == "content-delta":
-            yield chunk.delta.message.content.text
-            x += chunk.delta.message.content.text
+        if hasattr(chunk, "text") and chunk.text:
+            yield chunk.text
 
 def stream_email_summary_from_cohere(email_text, has_attachment):
     if not has_attachment:
@@ -451,9 +450,8 @@ def stream_email_summary_from_cohere(email_text, has_attachment):
 
     x = ""
     for chunk in response:
-        if chunk and chunk.type == "content-delta":
-            yield chunk.delta.message.content.text
-            x += chunk.delta.message.content.text
+        if hasattr(chunk, "text") and chunk.text:
+            yield chunk.text
 
 # Streamlit App
 st.title("📄 Tender Document Summarizer")
