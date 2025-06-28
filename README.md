@@ -70,6 +70,7 @@ Sales2/
 ### ✅ Step 5: Streamlit Secrets
 1. After deploying the app to Streamlit go to **My apps** -> Your app **Settings** -> **Secrets**
 2. Put put your apikey, credentials.json and tokenjson details in the following format:
+   *Fill in the "" with your own data obviously!
 ```toml
 cohere_api_key=""
 
